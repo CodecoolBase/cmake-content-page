@@ -48,7 +48,7 @@ Also create a header file *max.hpp* so we can refer to our function from other f
 And finally create a main file from where we can use it.
 
 *main.cpp:*
-#+BEGIN_SRC c++ :tangle main.cpp :padline no
+#+BEGIN_SRC c++
   #include <iostream>
 
   #include "max.hpp"
@@ -70,4 +70,45 @@ Now the fun part: Let's create a runnable program.
 #+END_SRC
 
 Whoohoo!! Easy-peasy.
+
+It took some arguments but nothing complicated.
+Let's say we want to use variables for the numbers so we can change them consistently.
+The new *main.cpp* looks like this:
+
+#+BEGIN_SRC c++ :tangle main.cpp :padline no
+  #include <iostream>
+
+  #include "max.hpp"
+
+  int main() {
+    constexpr int a = 2;
+    constexpr int b = 4;
+
+    std::cout << "The maximum of " << a << " and " << b
+              << " is: " << cmake_tutorial::max(a, b) << std::endl;
+    return 0;
+  }
+#+END_SRC
+
+Everything works just as before:
+
+#+BEGIN_SRC sh
+  $ clang++ --std=c++11 max.cpp main.cpp -o main
+
+  $ ./main
+  The maximum of 2 and 4 is: 4
+#+END_SRC
+
+*But wait!*
+
+Now we are recompiling *max.cpp* as well.
+Even though it didn't change at all.
+
+This is not much of a problem now but we can see
+how it could be a huge issue in a real project with lots of files.
+
+What can we do?
+- Keep around intermediate files.
+- Recompile what's changed.
+- Link the intermediates into an executable.
 

@@ -3,7 +3,10 @@
 #include "max.hpp"
 
 int main() {
-  std::cout << "The maximum of 2 and 4 is: " << cmake_tutorial::max(2, 4)
-            << std::endl;
+  constexpr int a = 2;
+  constexpr int b = 4;
+
+  std::cout << "The maximum of " << a << " and " << b
+            << " is: " << cmake_tutorial::max(a, b) << std::endl;
   return 0;
 }
