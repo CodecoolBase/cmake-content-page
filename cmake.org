@@ -120,3 +120,92 @@ What can we do?
   $ ./main
   The maximum of 2 and 4 is: 4
 #+END_SRC
+
+With the =-c= argument we managed to generate so called *object files*:
+
+#+BEGIN_SRC sh
+  $ size *.o
+     text    data     bss     dec     hex filename
+      365       8       1     374     176 main.o
+       56       0       0      56      38 max.o
+#+END_SRC
+
+And used those instead of the =.cpp= files to link our executable.
+
+Now we have another problem:
+- We have to do more steps then before.
+- We have to keep track of what has changed.
+
+One solutions to these problems is older than the internet:
+
+* Makefiles
+
+Makefiles contain rules.
+Rules (in general) have three parts:
+- A target to make
+- Dependencies needed to make the target
+- List of steps to make the target from its dependencies
+
+Rules have the following form:
+#+BEGIN_SRC makefile
+  target: dependency1 dependency2 dependency3
+          cmd -o target dependency1 dependency2 dependency3
+          echo building target done
+#+END_SRC
+
+~NOTE:~ steps are indented with a ~TAB~ character
+
+To make writing rules less tedious and errorprone there are some special variables.
+For example:
+- =$@= is for the target
+- =$<= is the first dependency
+- =$^= is all the dependencies
+
+Also to execute steps silently they can be prefixed with an =@= sign.
+
+So the above rule can be rewritten like this:
+
+#+BEGIN_SRC makefile
+  target: dependency1 dependency2 dependency3
+          @cmd -o $@ $^
+          @echo building target done
+#+END_SRC
+
+Variables can also be introduced and used with the following syntax:
+
+#+BEGIN_SRC makefile
+  TARGET=target
+  DEPENDENCIES=dependency1\
+    dependency2\
+    dependency3
+
+  $(TARGET): $(DEPENDENCIES)
+          @cmd -o $@ $^
+          @echo building $(TARGET) done
+#+END_SRC
+
+~NOTE:~ variables with names longer than one letter have to be inside parenthesis
+
+Based on this we can write our own makefile:
+
+*Makefile*
+#+BEGIN_SRC makefile :tangle Makefile :padline no
+  CXX=clang++
+  CXX_FLAGS=--std=c++11
+  OBJECTS=main.o\
+    max.o
+
+  main.o: main.cpp
+          @$(CXX) $(CXX_FLAGS) -c $<
+          @echo COMPILE $<
+
+  max.o: max.cpp
+          @$(CXX) $(CXX_FLAGS) -c $<
+          @echo COMPILE $<
+
+  main: $(OBJECTS)
+          @$(CXX) $^ -o $@
+          @echo LINK $@
+#+END_SRC
+
+One more convenience is that we can make general rules based on file extension.
