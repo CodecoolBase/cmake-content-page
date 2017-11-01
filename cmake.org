@@ -262,7 +262,7 @@ Let's do that:
 #+END_SRC
 
 It is also customary to add some convenience rules.
-Since the don't produce an actual output file, they are added to the =.PHONY= special target.
+Since they don't produce an actual output file, they are added to the =.PHONY= special target.
 
 #+BEGIN_SRC makefile :tangle Makefile :padline no
   CXX=clang++
