@@ -112,3 +112,11 @@ What can we do?
 - Recompile what's changed.
 - Link the intermediates into an executable.
 
+#+BEGIN_SRC sh
+  $ for source in *.cpp; do clang++ --std=c++11 -c $source; done
+
+  $ clang++ *.o -o main
+
+  $ ./main
+  The maximum of 2 and 4 is: 4
+#+END_SRC
