@@ -244,7 +244,7 @@ Then we can add rules for making =.ext1= files out of =.ext2= files as the follo
 
 Let's do that:
 
-#+BEGIN_SRC makefile :tangle Makefile :padline no
+#+BEGIN_SRC makefile
   CXX=clang++
   CXX_FLAGS=--std=c++11
   OBJECTS=main.o\
@@ -259,4 +259,53 @@ Let's do that:
   main: $(OBJECTS)
           @$(CXX) $^ -o $@
           @echo LINK $@
+#+END_SRC
+
+It is also customary to add some convenience rules.
+Since the don't produce an actual output file, they are added to the =.PHONY= special target.
+
+#+BEGIN_SRC makefile :tangle Makefile :padline no
+  CXX=clang++
+  CXX_FLAGS=--std=c++11
+  TARGET=main
+  OBJECTS=main.o\
+    max.o
+
+  .PHONY: all clean cleanall
+
+  all: $(TARGET)
+
+  clean:
+          @rm -f $(OBJECTS)
+          @echo CLEAN OBJECTS
+
+  cleanall: clean
+          @rm -f $(TARGET)
+          @echo CLEAN TARGET
+
+  .SUFFIXES: .cpp .o
+
+  .cpp.o:
+          @$(CXX) $(CXX_FLAGS) -c $<
+          @echo COMPILE $<
+
+  $(TARGET): $(OBJECTS)
+          @$(CXX) $^ -o $@
+          @echo LINK $@
+#+END_SRC
+
+Let's try our final Makefile:
+
+#+BEGIN_SRC sh
+  $ make cleanall
+  CLEAN OBJECTS
+  CLEAN TARGET
+
+  $ make all
+  COMPILE main.cpp
+  COMPILE max.cpp
+  LINK main
+
+  $ ./main
+  The maximum of 2 and 4 is: 4
 #+END_SRC
