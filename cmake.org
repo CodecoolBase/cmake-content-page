@@ -309,3 +309,144 @@ Let's try our final Makefile:
   $ ./main
   The maximum of 2 and 4 is: 4
 #+END_SRC
+
+* CMake
+
+OK, this is all fine and cool.
+But then why do we need CMake?
+
+The reason is twofold:
+
+** Portability
+
+One Makefile that works on linux might not work on Windows.
+
+Just one example: Dynamic libraries have different extensions on different systems:
+
+- =.dll= on Windows
+- =.so= on Linux and most unices
+- =.dylib= on OS X
+
+** Domain specific knowledge
+
+We might have eliminated duplications from our Makefile but it would be mostly the same
+in another C++ project.
+
+Makefiles are very general; they can be used to build anything.
+But we already know we'll build a C/C++ project, so in this case it is counter-productive
+having to write all C/C++ specific rules again and again.
+
+** The solution
+
+Generate our Makefiles.[fn:1]
+
+This way we have to concentrate only on the project-specific details.
+For example not on how to make a static library but on that which files to build into a static library.
+
+Let's try it!
+
+The entrypoint is a file called *CMakeLists.txt*
+#+BEGIN_SRC sh :tangle CMakeLists.txt :padline no
+  # set up a minimal version so we can't have compatibility issues
+  cmake_minimum_required(VERSION 3.8)
+
+  # which C++ standard to use for the project
+  set(CMAKE_CXX_STANDARD 11)
+
+  # our source files
+  set(SOURCES main.cpp max.cpp)
+
+  # our target
+  add_executable(main ${SOURCES})
+#+END_SRC
+
+It is customary to us a *build directory* so we can leave our porject tree clean.
+More importantly keep around different build environments in parallel.
+
+#+BEGIN_SRC sh
+  $ mkdir Build
+
+  $ cd Build
+
+  $ cmake -DCMAKE_BUILD_TYPE=Debug ..
+  -- The C compiler identification is Clang 4.0.1
+  -- The CXX compiler identification is Clang 4.0.1
+  -- Check for working C compiler: /nix/store/pwcqispxzsa5hz372f29q505mq0mcw1m-clang-wrapper-4.0.1/bin/clang
+  -- Check for working C compiler: /nix/store/pwcqispxzsa5hz372f29q505mq0mcw1m-clang-wrapper-4.0.1/bin/clang -- works
+  -- Detecting C compiler ABI info
+  -- Detecting C compiler ABI info - done
+  -- Detecting C compile features
+  -- Detecting C compile features - done
+  -- Check for working CXX compiler: /nix/store/pwcqispxzsa5hz372f29q505mq0mcw1m-clang-wrapper-4.0.1/bin/clang++
+  -- Check for working CXX compiler: /nix/store/pwcqispxzsa5hz372f29q505mq0mcw1m-clang-wrapper-4.0.1/bin/clang++ -- works
+  -- Detecting CXX compiler ABI info
+  -- Detecting CXX compiler ABI info - done
+  -- Detecting CXX compile features
+  -- Detecting CXX compile features - done
+  -- Configuring done
+  -- Generating done
+  -- Build files have been written to: /tmp/cmake/Build
+
+  $ ls -l
+  total 28
+  -rw-r--r-- 1 bence users 12423 Nov  1 23:34 CMakeCache.txt
+  drwxr-xr-x 5 bence users   300 Nov  1 23:34 CMakeFiles
+  -rw-r--r-- 1 bence users  5417 Nov  1 23:34 Makefile
+  -rw-r--r-- 1 bence users  1348 Nov  1 23:34 cmake_install.cmake
+
+  $ find -type f | wc -l
+  29
+#+END_SRC
+
+As we can see the =cmake= command needs the root directory of our project.
+And variables can be set with the =-D= option.
+
+Every other information that is needed to build our project is deduced by CMake.
+
+There are 29 new files generated.
+Among them the most important for us is a Makefile:
+
+#+BEGIN_SRC sh
+  $ wc -l Makefile 
+  208 Makefile
+
+  $ make help
+  The following are some of the valid targets for this Makefile:
+  ... all (the default if no target is provided)
+  ... clean
+  ... depend
+  ... rebuild_cache
+  ... edit_cache
+  ... main
+  ... main.o
+  ... main.i
+  ... main.s
+  ... max.o
+  ... max.i
+  ... max.s
+#+END_SRC
+
+This is a bit more involved then the one we wrote by hand.
+
+#+BEGIN_SRC sh
+  $ make all
+  Scanning dependencies of target main
+  [ 33%] Building CXX object CMakeFiles/main.dir/main.cpp.o
+  [ 66%] Building CXX object CMakeFiles/main.dir/max.cpp.o
+  [100%] Linking CXX executable main
+  [100%] Built target main
+
+  $ find -type f | wc -l
+  34
+
+  $ ./main 
+  The maximum of 2 and 4 is: 4
+#+END_SRC
+
+But everything works as expected, only better.
+
+Now that we have everything done for us let's reorganize our project.
+
+* Footnotes
+
+[fn:1] CMake can generate files for multiple build systems. For example: make, ninja, etc.
