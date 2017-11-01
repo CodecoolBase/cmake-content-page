@@ -1,0 +1,35 @@
+#+TITLE: CMake
+#+OPTIONS: toc:nil num:nil
+
+CMake is the build tool used in a lot of C/C++ projects nowadays.
+We've been using it too for the last couple of weeks.
+
+But we mostly used it as a magic black box so far.
+
+- What is the exact problem it is trying to solve?
+- How is it solving it?
+- What is exactly that is done by CMake and not delegated to other tools?
+
+These are the questions this page aims to answer.
+
+* The problem at hand
+
+In this tutorial we'll work from the shell so we have control over what is executed.
+And also can inspect things between steps.
+Let's create a directory to work in and enter it:
+
+#+BEGIN_SRC sh
+  $ mkdir cmake-tutorial
+  $ cd cmake-tutorial
+#+END_SRC
+
+Let's create a C++ file called *max.cpp*
+
+#+BEGIN_SRC c++ :tangle max.cpp :padline no
+  int max(int a, int b) {
+    if (a > b)
+      return a;
+    return b;
+  }
+#+END_SRC
+
