@@ -491,6 +491,10 @@ Also rewrite the include of *max.hpp* in *main.cpp*
   #include <max.hpp>
 #+END_SRC
 
+Create a new build directory, generate the makefiles.
+
+When we =make all= the main target is at *src/main* relative to the build directory.
+
 * Footnotes
 
 [fn:1] CMake can generate files for multiple build systems. For example: make, ninja, etc.
