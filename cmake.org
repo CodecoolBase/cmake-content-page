@@ -26,10 +26,22 @@ Let's create a directory to work in and enter it:
 Let's create a C++ file called *max.cpp*
 
 #+BEGIN_SRC c++ :tangle max.cpp :padline no
+  namespace cmake_tutorial {
   int max(int a, int b) {
     if (a > b)
       return a;
     return b;
+  }
+  }
+#+END_SRC
+
+Also create a header file *max.hpp* so we can refer to our function from other files.
+
+#+BEGIN_SRC c++ :tangle max.hpp :padline no
+  #pragma once
+
+  namespace cmake_tutorial {
+  int max(int, int);
   }
 #+END_SRC
 
