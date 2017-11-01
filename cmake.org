@@ -25,7 +25,7 @@ Let's create a directory to work in and enter it:
 
 Let's create a C++ file called *max.cpp*
 
-#+BEGIN_SRC c++ :tangle max.cpp :padline no
+#+BEGIN_SRC c++
   namespace cmake_tutorial {
   int max(int a, int b) {
     if (a > b)
@@ -37,7 +37,7 @@ Let's create a C++ file called *max.cpp*
 
 Also create a header file *max.hpp* so we can refer to our function from other files.
 
-#+BEGIN_SRC c++ :tangle max.hpp :padline no
+#+BEGIN_SRC c++
   #pragma once
 
   namespace cmake_tutorial {
@@ -75,7 +75,7 @@ It took some arguments but nothing complicated.
 Let's say we want to use variables for the numbers so we can change them consistently.
 The new *main.cpp* looks like this:
 
-#+BEGIN_SRC c++ :tangle main.cpp :padline no
+#+BEGIN_SRC c++
   #include <iostream>
 
   #include "max.hpp"
@@ -264,7 +264,7 @@ Let's do that:
 It is also customary to add some convenience rules.
 Since they don't produce an actual output file, they are added to the =.PHONY= special target.
 
-#+BEGIN_SRC makefile :tangle Makefile :padline no
+#+BEGIN_SRC makefile
   CXX=clang++
   CXX_FLAGS=--std=c++11
   TARGET=main
@@ -346,7 +346,7 @@ For example not on how to make a static library but on that which files to build
 Let's try it!
 
 The entrypoint is a file called *CMakeLists.txt*
-#+BEGIN_SRC sh :tangle CMakeLists.txt :padline no
+#+BEGIN_SRC sh
   # set up a minimal version so we can't have compatibility issues
   cmake_minimum_required(VERSION 3.8)
 
@@ -446,6 +446,50 @@ This is a bit more involved then the one we wrote by hand.
 But everything works as expected, only better.
 
 Now that we have everything done for us let's reorganize our project.
+
+Move header files into an *include* directory
+and source files into a *src* directory.
+
+#+BEGIN_SRC sh
+  $ cd ..
+  $ mkdir src
+  $ mkdir include
+  $ mv *.cpp src
+  $ mv *.hpp include
+#+END_SRC
+
+Rewrite *CMakeLists.txt* thus
+#+BEGIN_SRC sh :tangle CMakeLists.txt :padline no
+  # set up a minimal version so we can't have compatibility issues
+  cmake_minimum_required(VERSION 3.8)
+
+  # which C++ standard to use for the project
+  set(CMAKE_CXX_STANDARD 11)
+
+  # add a project-level include dir
+  include_directories(include)
+
+  # add a subproject
+  add_subdirectory(src)
+#+END_SRC
+
+Inside the *src* directory add a *CMakeLists.txt* for the subproject:
+
+#+BEGIN_SRC sh :tangle src/CMakeLists.txt :padline no :mkdirp yes
+  # set up a minimal version so we can't have compatibility issues
+  cmake_minimum_required(VERSION 3.8)
+
+  # our source files
+  set(SOURCES main.cpp max.cpp)
+
+  # our target
+  add_executable(main ${SOURCES})
+#+END_SRC
+
+Also rewrite the include of *max.hpp* in *main.cpp*
+#+BEGIN_SRC c++
+  #include <max.hpp>
+#+END_SRC
 
 * Footnotes
 

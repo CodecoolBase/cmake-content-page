@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "max.hpp"
+#include <max.hpp>
 
 int main() {
   constexpr int a = 2;
