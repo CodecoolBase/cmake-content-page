@@ -45,3 +45,29 @@ Also create a header file *max.hpp* so we can refer to our function from other f
   }
 #+END_SRC
 
+And finally create a main file from where we can use it.
+
+*main.cpp:*
+#+BEGIN_SRC c++ :tangle main.cpp :padline no
+  #include <iostream>
+
+  #include "max.hpp"
+
+  int main() {
+    std::cout << "The maximum of 2 and 4 is: " << cmake_tutorial::max(2, 4)
+              << std::endl;
+    return 0;
+  }
+#+END_SRC
+
+Now the fun part: Let's create a runnable program.
+
+#+BEGIN_SRC sh
+  $ clang++ --std=c++11 max.cpp main.cpp -o main
+
+  $ ./main
+  The maximum of 2 and 4 is: 4
+#+END_SRC
+
+Whoohoo!! Easy-peasy.
+
