@@ -189,7 +189,7 @@ Variables can also be introduced and used with the following syntax:
 Based on this we can write our own makefile:
 
 *Makefile*
-#+BEGIN_SRC makefile :tangle Makefile :padline no
+#+BEGIN_SRC makefile
   CXX=clang++
   CXX_FLAGS=--std=c++11
   OBJECTS=main.o\
@@ -208,4 +208,55 @@ Based on this we can write our own makefile:
           @echo LINK $@
 #+END_SRC
 
+Let's try it:
+
+#+BEGIN_SRC sh
+  $ make main
+  COMPILE main.cpp
+  COMPILE max.cpp
+  LINK main
+
+  $ touch max.cpp
+
+  $ make main
+  COMPILE max.cpp
+  LINK main
+
+  $ make main
+  make: 'main' is up to date.
+#+END_SRC
+
+Notice how when we update the timestamp of *max.cpp* then only *max.o* and *main* is rebuilt.
+Make can figure out what needs to be rebuilt based on file timestamps.
+
+This is pretty cool, but the rule for the object files is the same to the letter.
 One more convenience is that we can make general rules based on file extension.
+We had to add the extension to =.SUFFIXES= which is a special target in a Makefile.
+Then we can add rules for making =.ext1= files out of =.ext2= files as the following:
+
+#+BEGIN_SRC makefile
+  .SUFFIXES: .ext1 .ext2
+
+  .ext2.ext1:
+          @cmd -o $@ $<
+          @echo BUILD $@
+#+END_SRC
+
+Let's do that:
+
+#+BEGIN_SRC makefile :tangle Makefile :padline no
+  CXX=clang++
+  CXX_FLAGS=--std=c++11
+  OBJECTS=main.o\
+    max.o
+
+  .SUFFIXES: .cpp .o
+
+  .cpp.o:
+          @$(CXX) $(CXX_FLAGS) -c $<
+          @echo COMPILE $<
+
+  main: $(OBJECTS)
+          @$(CXX) $^ -o $@
+          @echo LINK $@
+#+END_SRC

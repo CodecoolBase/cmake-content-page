@@ -3,11 +3,9 @@ CXX_FLAGS=--std=c++11
 OBJECTS=main.o\
   max.o
 
-main.o: main.cpp
-	@$(CXX) $(CXX_FLAGS) -c $<
-	@echo COMPILE $<
+.SUFFIXES: .cpp .o
 
-max.o: max.cpp
+.cpp.o:
 	@$(CXX) $(CXX_FLAGS) -c $<
 	@echo COMPILE $<
 
