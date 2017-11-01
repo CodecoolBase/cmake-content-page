@@ -360,7 +360,7 @@ The entrypoint is a file called *CMakeLists.txt*
   add_executable(main ${SOURCES})
 #+END_SRC
 
-It is customary to us a *build directory* so we can leave our porject tree clean.
+It is customary to use a *build directory* so we can leave our project tree clean.
 More importantly keep around different build environments in parallel.
 
 #+BEGIN_SRC sh
